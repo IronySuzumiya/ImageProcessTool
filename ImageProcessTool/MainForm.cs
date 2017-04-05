@@ -49,7 +49,7 @@ namespace ImageProcessTool
             pnlImage.Refresh();
         }
 
-        private void btnSaveImage_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             saveFileDialog.ShowDialog();
         }
@@ -57,6 +57,17 @@ namespace ImageProcessTool
         private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
         {
             images[cmbBitmaps.SelectedIndex].Save(saveFileDialog.FileName);
+        }
+
+        private void btnSaveAll_Click(object sender, EventArgs e)
+        {
+            if(folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                for(int i = 0; i < images.Count; ++i)
+                {
+                    images[i].Save(folderBrowserDialog.SelectedPath + "\\" + cmbBitmaps.Items[i].ToString() + ".bmp");
+                }
+            }
         }
     }
 }

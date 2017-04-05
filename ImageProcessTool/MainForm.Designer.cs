@@ -30,8 +30,10 @@
         {
             this.pnlImage = new System.Windows.Forms.Panel();
             this.cmbBitmaps = new System.Windows.Forms.ComboBox();
-            this.btnSaveImage = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.btnSaveAll = new System.Windows.Forms.Button();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // pnlImage
@@ -51,15 +53,15 @@
             this.cmbBitmaps.TabIndex = 1;
             this.cmbBitmaps.SelectedIndexChanged += new System.EventHandler(this.cmbBitmaps_SelectedIndexChanged);
             // 
-            // btnSaveImage
+            // btnSave
             // 
-            this.btnSaveImage.Location = new System.Drawing.Point(365, 10);
-            this.btnSaveImage.Name = "btnSaveImage";
-            this.btnSaveImage.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveImage.TabIndex = 2;
-            this.btnSaveImage.Text = "保存图片";
-            this.btnSaveImage.UseVisualStyleBackColor = true;
-            this.btnSaveImage.Click += new System.EventHandler(this.btnSaveImage_Click);
+            this.btnSave.Location = new System.Drawing.Point(284, 10);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 2;
+            this.btnSave.Text = "保存";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // saveFileDialog
             // 
@@ -67,12 +69,28 @@
             this.saveFileDialog.Filter = "位图文件|*.bmp";
             this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
             // 
+            // btnSaveAll
+            // 
+            this.btnSaveAll.Location = new System.Drawing.Point(365, 10);
+            this.btnSaveAll.Name = "btnSaveAll";
+            this.btnSaveAll.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveAll.TabIndex = 3;
+            this.btnSaveAll.Text = "保存全部";
+            this.btnSaveAll.UseVisualStyleBackColor = true;
+            this.btnSaveAll.Click += new System.EventHandler(this.btnSaveAll_Click);
+            // 
+            // folderBrowserDialog
+            // 
+            this.folderBrowserDialog.Description = "选择图片存放位置";
+            this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(452, 332);
-            this.Controls.Add(this.btnSaveImage);
+            this.Controls.Add(this.btnSaveAll);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.cmbBitmaps);
             this.Controls.Add(this.pnlImage);
             this.Name = "MainForm";
@@ -86,8 +104,10 @@
 
         private System.Windows.Forms.Panel pnlImage;
         private System.Windows.Forms.ComboBox cmbBitmaps;
-        private System.Windows.Forms.Button btnSaveImage;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.Button btnSaveAll;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }
 
