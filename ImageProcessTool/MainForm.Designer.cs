@@ -30,6 +30,8 @@
         {
             this.pnlImage = new System.Windows.Forms.Panel();
             this.cmbBitmaps = new System.Windows.Forms.ComboBox();
+            this.btnSaveImage = new System.Windows.Forms.Button();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.SuspendLayout();
             // 
             // pnlImage
@@ -49,15 +51,32 @@
             this.cmbBitmaps.TabIndex = 1;
             this.cmbBitmaps.SelectedIndexChanged += new System.EventHandler(this.cmbBitmaps_SelectedIndexChanged);
             // 
+            // btnSaveImage
+            // 
+            this.btnSaveImage.Location = new System.Drawing.Point(365, 10);
+            this.btnSaveImage.Name = "btnSaveImage";
+            this.btnSaveImage.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveImage.TabIndex = 2;
+            this.btnSaveImage.Text = "保存图片";
+            this.btnSaveImage.UseVisualStyleBackColor = true;
+            this.btnSaveImage.Click += new System.EventHandler(this.btnSaveImage_Click);
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.DefaultExt = "bmp";
+            this.saveFileDialog.Filter = "位图文件|*.bmp";
+            this.saveFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog_FileOk);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(452, 332);
+            this.Controls.Add(this.btnSaveImage);
             this.Controls.Add(this.cmbBitmaps);
             this.Controls.Add(this.pnlImage);
             this.Name = "MainForm";
-            this.Text = "Fitting Straight Line";
+            this.Text = "Image Process Tool";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 
@@ -67,6 +86,8 @@
 
         private System.Windows.Forms.Panel pnlImage;
         private System.Windows.Forms.ComboBox cmbBitmaps;
+        private System.Windows.Forms.Button btnSaveImage;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
     }
 }
 

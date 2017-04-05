@@ -341,6 +341,18 @@ namespace ImageProcessTool
                 rightBorder[row] = row * rightSlope[rightCompensateStart - 5] + rightZero[rightCompensateStart - 5];
             }
 
+            var compensateEnd = Math.Max(leftCompensateEnd, rightCompensateEnd);
+
+            var borderSearchStart = (leftBorder[compensateEnd - 1] + rightBorder[compensateEnd - 1]) / 2;
+            for (int row = compensateEnd; row < image.height; ++row)
+            {
+                SearchForBordersFrom(row, borderSearchStart);
+                if (Math.Abs((rightBorder[row] + leftBorder[row]) - (rightBorder[row - 1] + leftBorder[row - 1])) < 10)
+                {
+                    borderSearchStart = (rightBorder[row] + leftBorder[row]) / 2;
+                }
+            }
+
             UpdateMiddleLine();
         }
 
@@ -356,9 +368,14 @@ namespace ImageProcessTool
             {
                 rightBorder[i] = col + (row + 1 - i) * (rightBorder[0] - col) / row;
             }
-            for(int i = row + 1; i < image.height; ++i)
+            var borderSearchStart = col / 2;
+            for (int i = row; i < image.height; ++i)
             {
-                SearchForBordersFrom(i, col / 2);
+                SearchForBordersFrom(i, borderSearchStart);
+                if(leftBorder[i] != 0)
+                {
+                    borderSearchStart = (leftBorder[i] + rightBorder[i]) / 2;
+                }
             }
             UpdateMiddleLine();
         }
@@ -375,9 +392,14 @@ namespace ImageProcessTool
             {
                 leftBorder[i] = col - (row + 1 - i) * (col - leftBorder[0]) / row;
             }
-            for (int i = row + 1; i < image.height; ++i)
+            var borderSearchStart = col + (image.width - col) / 2;
+            for (int i = row; i < image.height; ++i)
             {
-                SearchForBordersFrom(i, col + (image.width - col) / 2);
+                SearchForBordersFrom(i, borderSearchStart);
+                if(rightBorder[i] != image.width - 1)
+                {
+                    borderSearchStart = (leftBorder[i] + rightBorder[i]) / 2;
+                }
             }
             UpdateMiddleLine();
         }

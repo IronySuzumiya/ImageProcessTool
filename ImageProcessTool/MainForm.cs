@@ -48,5 +48,15 @@ namespace ImageProcessTool
         {
             pnlImage.Refresh();
         }
+
+        private void btnSaveImage_Click(object sender, EventArgs e)
+        {
+            saveFileDialog.ShowDialog();
+        }
+
+        private void saveFileDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            images[cmbBitmaps.SelectedIndex].Save(saveFileDialog.FileName);
+        }
     }
 }
