@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ImageProcessTool
 {
-    unsafe public static class ImageProcesser
+    unsafe public static class ImageProcessor
     {
         public static void Process(Bitmap bitmap, string name = "")
         {

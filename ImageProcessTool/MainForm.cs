@@ -37,7 +37,7 @@ namespace ImageProcessTool
                 {
                     cmbBitmaps.Items.Add(f.Name);
                     var bitmap = f.GetValue(null) as Bitmap;
-                    ImageProcesser.Process(bitmap, f.Name);
+                    ImageProcessor.Process(bitmap, f.Name);
                     images.Add(bitmap);
                 }
             }
