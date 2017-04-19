@@ -1,4 +1,5 @@
-﻿using ImageProcessTool.Properties;
+﻿using FittingStraightLine.Properties;
+using ImageProcessTool.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -162,15 +162,8 @@ namespace ImageProcessTool
         {
             get
             {
-                if(leftBorderNotFoundCnt > 3 && rightBorderNotFoundCnt > 3
-                    && leftBorderNotFoundCnt + rightBorderNotFoundCnt > 15)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return leftBorderNotFoundCnt > 3 && rightBorderNotFoundCnt > 3
+                    && leftBorderNotFoundCnt + rightBorderNotFoundCnt > 15;
             }
         }
 
@@ -186,14 +179,7 @@ namespace ImageProcessTool
                         ++blackCnt;
                     }
                 }
-                if (blackCnt > 5)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return blackCnt > 5;
             }
         }
 
@@ -202,56 +188,25 @@ namespace ImageProcessTool
             get
             {
                 int blackBlockRowsCnt = 0;
-                for(int row = image.height - 1; row >= 30; --row)
+                int col;
+                for (int row = image.height - 1; row >= 30; --row)
                 {
                     if(image.IsWhite(row, image.width / 2))
                     {
                         continue;
                     }
-                    var blackBlockLeftBorderFound = false;
-                    for(int col = image.width / 2 - 1; row >= 0; --col)
-                    {
-                        if(image.IsWhite(row, col))
-                        {
-                            if (col < image.width / 2 - 10)
-                            {
-                                blackBlockLeftBorderFound = true;
-                                break;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    if(!blackBlockLeftBorderFound)
+                    for(col = image.width / 2 - 1; image.IsBlack(row, col) && col >= image.width / 2 - 10; --col) { }
+                    if(col >= image.width / 2 - 10)
                     {
                         continue;
                     }
-                    for (int col = image.width / 2 + 1; col < image.width; ++col)
+                    for (col = image.width / 2 + 1; image.IsBlack(row, col) && col <= image.width / 2 + 10; ++col) { }
+                    if(col > image.width / 2 + 10)
                     {
-                        if (image.IsWhite(row, col))
-                        {
-                            if (col > image.width / 2 + 10)
-                            {
-                                ++blackBlockRowsCnt;
-                                break;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
+                        ++blackBlockRowsCnt;
                     }
                 }
-                if(blackBlockRowsCnt > 10)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return blackBlockRowsCnt > 10;
             }
         }
 
