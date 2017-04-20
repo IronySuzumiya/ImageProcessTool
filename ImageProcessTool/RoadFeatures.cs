@@ -28,6 +28,9 @@ namespace ImageProcessTool
         public int[] middleSlope;
         public int[] middleZero;
 
+        private int leftBorderNotFoundCnt;
+        private int rightBorderNotFoundCnt;
+
         public ImageFrame image;
         public string name;
 
@@ -46,6 +49,9 @@ namespace ImageProcessTool
             middleSlope = new int[image.height];
             middleZero = new int[image.height];
             rightBorder = new int[image.height];
+
+            leftBorderNotFoundCnt = 0;
+            rightBorderNotFoundCnt = 0;
 
             for (int i = 0; i < image.height; ++i)
             {
@@ -67,66 +73,44 @@ namespace ImageProcessTool
             }
         }
 
-        private void SearchForBordersFrom(int row, int borderSearchStart)
+        private void SearchForBordersFrom(int row, int borderSearchStart, bool modifyNotFoundCnt = true)
         {
-            int col;
-            for (col = borderSearchStart - 1; col >= 0; --col)
+            if(!SearchForLeftBorderFrom(row, borderSearchStart) && modifyNotFoundCnt)
             {
-                if (image.IsBlack(row, col) && image.IsWhite(row, col + 1))
+                ++leftBorderNotFoundCnt;
+            }
+            if(!SearchForRightBorderFrom(row, borderSearchStart) && modifyNotFoundCnt)
+            {
+                ++rightBorderNotFoundCnt;
+            }
+        }
+
+        private bool SearchForLeftBorderFrom(int row, int borderSearchStart)
+        {
+            for (int col = borderSearchStart - 1; col >= 0; --col)
+            {
+                if (image.IsBlack(row, col))
                 {
-                    leftBorder[row] = col + 1;
-                    break;
+                    leftBorder[row] = col;
+                    return true;
                 }
             }
-            if(col == -1)
-            {
-                leftBorder[row] = 0;
-            }
+            leftBorder[row] = 0;
+            return false;
+        }
 
-            for (col = borderSearchStart; col < image.width - 1; ++col)
+        private bool SearchForRightBorderFrom(int row, int borderSearchStart)
+        {
+            for (int col = borderSearchStart; col < image.width; ++col)
             {
-                if (image.IsWhite(row, col) && image.IsBlack(row, col + 1))
+                if (image.IsBlack(row, col))
                 {
                     rightBorder[row] = col;
-                    break;
+                    return true;
                 }
             }
-            if(col == image.width - 1)
-            {
-                rightBorder[row] = image.width - 1;
-            }
-        }
-
-        private int leftBorderNotFoundCnt
-        {
-            get
-            {
-                int cnt = 0;
-                for(int row = 0; row < image.height; ++row)
-                {
-                    if(leftBorder[row] == 0)
-                    {
-                        ++cnt;
-                    }
-                }
-                return cnt;
-            }
-        }
-
-        private int rightBorderNotFoundCnt
-        {
-            get
-            {
-                int cnt = 0;
-                for (int row = 0; row < image.height; ++row)
-                {
-                    if (rightBorder[row] == image.width - 1)
-                    {
-                        ++cnt;
-                    }
-                }
-                return cnt;
-            }
+            rightBorder[row] = image.width - 1;
+            return false;
         }
 
         public void CalculateSlopes()
@@ -257,51 +241,78 @@ namespace ImageProcessTool
 
         public void CompensateCrossRoad()
         {
-            var leftCompensateStart = image.height - 1;
-            var rightCompensateStart = image.height - 1;
-            var leftCompensateEnd = image.height - 1;
-            var rightCompensateEnd = image.height - 1;
+            var leftCompensateStart = image.height;
+            var rightCompensateStart = image.height;
+            var leftCompensateEnd = image.height;
+            var rightCompensateEnd = image.height;
 
             {
                 int row = 6;
                 while (row < image.height && leftBorder[row] != 0
-                    && Math.Abs(leftSlope[row] - leftSlope[row - 1]) < 3) { ++row; }
+                    && Math.Abs(leftSlope[row] - leftSlope[row - 1]) < 3 && leftSlope[row] * leftSlope[row - 1] >= 0) { ++row; }
                 leftCompensateStart = row;
-                row += 5;
-                while (row < image.height
-                    && (leftBorder[row] == 0 || Math.Abs(leftSlope[row] - leftSlope[row - 1]) >= 3)) { ++row; }
-                row += 4;
-                leftCompensateEnd = Math.Min(row, image.height - 1);
             }
 
             {
                 int row = 6;
                 while (row < image.height && rightBorder[row] != image.width - 1
-                    && Math.Abs(rightSlope[row] - rightSlope[row - 1]) < 3) { ++row; }
+                    && Math.Abs(rightSlope[row] - rightSlope[row - 1]) < 3 && leftSlope[row] * leftSlope[row - 1] >= 0) { ++row; }
                 rightCompensateStart = row;
-                row += 5;
-                while (row < image.height
-                    && (rightBorder[row] == image.width - 1 || Math.Abs(rightSlope[row] - rightSlope[row - 1]) >= 3)) { ++row; }
-                row += 4;
-                rightCompensateEnd = Math.Min(row, image.height - 1);
             }
 
             for (int row = leftCompensateStart; row < leftCompensateEnd; ++row)
             {
                 leftBorder[row] = row * leftSlope[leftCompensateStart - 5] + leftZero[leftCompensateStart - 5];
+                if(image.IsBlack(row, leftBorder[row]))
+                {
+                    leftCompensateEnd = row;
+                    break;
+                }
             }
 
             for (int row = rightCompensateStart; row < rightCompensateEnd; ++row)
             {
                 rightBorder[row] = row * rightSlope[rightCompensateStart - 5] + rightZero[rightCompensateStart - 5];
+                if (image.IsBlack(row, rightBorder[row]))
+                {
+                    rightCompensateEnd = row;
+                    break;
+                }
+            }
+
+            int borderSearchStart;
+
+            if (leftCompensateEnd < rightCompensateEnd)
+            {
+                borderSearchStart = (leftBorder[leftCompensateEnd - 1] + rightBorder[leftCompensateEnd - 1]) / 2;
+                for (int row = leftCompensateEnd; row < rightCompensateEnd; ++row)
+                {
+                    SearchForLeftBorderFrom(row, borderSearchStart);
+                    //if (Math.Abs((rightBorder[row] + leftBorder[row]) - (rightBorder[row - 1] + leftBorder[row - 1])) < 10)
+                    //{
+                        borderSearchStart = (rightBorder[row] + leftBorder[row]) / 2;
+                    //}
+                }
+            }
+            else if (leftCompensateEnd > rightCompensateEnd)
+            {
+                borderSearchStart = (leftBorder[rightCompensateEnd - 1] + rightBorder[rightCompensateEnd - 1]) / 2;
+                for (int row = rightCompensateEnd; row < leftCompensateEnd; ++row)
+                {
+                    SearchForRightBorderFrom(row, borderSearchStart);
+                    //if (Math.Abs((rightBorder[row] + leftBorder[row]) - (rightBorder[row - 1] + leftBorder[row - 1])) < 10)
+                    //{
+                        borderSearchStart = (rightBorder[row] + leftBorder[row]) / 2;
+                    //}
+                }
             }
 
             var compensateEnd = Math.Max(leftCompensateEnd, rightCompensateEnd);
 
-            var borderSearchStart = (leftBorder[compensateEnd - 1] + rightBorder[compensateEnd - 1]) / 2;
+            borderSearchStart = (leftBorder[compensateEnd - 1] + rightBorder[compensateEnd - 1]) / 2;
             for (int row = compensateEnd; row < image.height; ++row)
             {
-                SearchForBordersFrom(row, borderSearchStart);
+                SearchForBordersFrom(row, borderSearchStart, false);
                 if (Math.Abs((rightBorder[row] + leftBorder[row]) - (rightBorder[row - 1] + leftBorder[row - 1])) < 10)
                 {
                     borderSearchStart = (rightBorder[row] + leftBorder[row]) / 2;
